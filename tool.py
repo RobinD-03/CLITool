@@ -25,10 +25,9 @@ def main():
     parser_downsample.add_argument("voxel_size", type=float, default=0.05, help="Voxel size")
     parser_downsample.set_defaults(func=downsample)
     
-    # Subparser for 'visualize' command
     parser_visualize = subparsers.add_parser("v", help="Visualize Point cloud")
-    parser_visualize.add_argument("path", nargs="?", default=None, help="Path to visualize, last path given will be visualized if none is specified")
-    parser_visualize.set_defaults(func=visualize)
+    parser_visualize.add_argument("path", nargs="?", default=None, help="Paths to visualize")
+    parser_visualize.set_defaults(func=visualize_point_cloud)
     
     args = parser.parse_args()
     args.func(args)
@@ -39,15 +38,15 @@ def downsample(args):
     global path
     path = args.output_file
 
-def visualize(args):
-    # Your visualization logic here
+def visualize_point_cloud(args):
     global path
-    if args.path:
-        visualize.visualize(args.path)
-    elif path:
+    if not args.paths and path:
         visualize.visualize(path)
+    elif args.paths:
+        for path in args.paths:
+            visualize.visualize(path)
     else:
-        sys.exit("no path specified")
+        sys.exit("No path specified for visualization.")
 
 if __name__ == "__main__":
     main()
