@@ -67,7 +67,7 @@ class PointCloudTool():
         parser_cluster.add_argument('cluster_input_file', help="Path to input file")
         parser_cluster.add_argument('cluster_output_file', help="Path to output file")
         parser_cluster.add_argument('--epsilon', '-e', type=float, help="Epsilon")
-        parser_cluster.add_argument('--minimum', '-m', type=float, help="Minimum Points to create a Cluster")
+        parser_cluster.add_argument('--minimum', '-m', type=int, help="Minimum Points to create a Cluster")
         parser_cluster.set_defaults(func=self.clustering)
 
         return parser
