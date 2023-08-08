@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def segment(pcd,distance):
+    pcd = o3d.io.read_point_cloud(pcd)
     plane_model, inliers = pcd.segment_plane(distance_threshold=distance,
                                             ransac_n=3,
                                             num_iterations=1000)
@@ -16,6 +17,7 @@ def segment(pcd,distance):
     return inlier_cloud, outlier_cloud
 
 def cluster(outlier_cloud,epsilon,minimum):
+    outlier_cloud = o3d.io.read_point_cloud(outlier_cloud)
     with o3d.utility.VerbosityContextManager(
             o3d.utility.VerbosityLevel.Debug) as cm:
         labels = np.array(
