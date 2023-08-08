@@ -53,14 +53,14 @@ class PointCloudTool():
         parser_filter.add_argument('filter_output_file', help="Path to output file")
         parser_filter.add_argument('--neighbors', '-n', type=int, help="Number of neighbors, default value: 20")
         parser_filter.add_argument('--ratio', '-r', type=float, help="filtering ratio, default value: 2.0")
-        parser_visualize.set_defaults(func=self.filtering)
+        parser_filter.set_defaults(func=self.filtering)
         
         # Subparser for segmentation
         parser_segment = subparsers.add_parser('s', help="Point Cloud Plane Segmentation")
         parser_segment.add_argument('segment_input_file', help="Path to input file")
         parser_segment.add_argument('segment_output_file', help="Path to output file")
         parser_segment.add_argument('--distance', '-dt', type=float, help="Distnace Threshold Between Points")
-        parser_visualize.set_defaults(func=self.segmenting)
+        parser_segment.set_defaults(func=self.segmenting)
 
         # Subparser for clustering
         parser_cluster = subparsers.add_parser('c', help="Point Cloud Clustering")
@@ -68,7 +68,7 @@ class PointCloudTool():
         parser_cluster.add_argument('cluster_output_file', help="Path to output file")
         parser_cluster.add_argument('--epsilon', '-e', type=float, help="Epsilon")
         parser_cluster.add_argument('--minimum', '-m', type=float, help="Minimum Points to create a Cluster")
-        parser_visualize.set_defaults(func=self.clustering)
+        parser_cluster.set_defaults(func=self.clustering)
 
         return parser
 
