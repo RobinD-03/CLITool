@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 def segment(pcd,distance):
     plane_model, inliers = pcd.segment_plane(distance_threshold=distance,
                                             ransac_n=3,
-                                            num_iterations=2000)
+                                            num_iterations=1000)
     [a, b, c, d] = plane_model
     print(f"Plane equation: {a:.2f}x + {b:.2f}y + {c:.2f}z + {d:.2f} = 0")
 

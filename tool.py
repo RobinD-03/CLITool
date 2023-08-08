@@ -46,7 +46,27 @@ class PointCloudTool():
         parser_visualize = subparsers.add_parser("v", help="Visualize Point cloud")
         parser_visualize.add_argument("path", nargs="?", default=None, help="Path to visualize, last path given will be visualized if none is specified")
         parser_visualize.set_defaults(func=self.visualize)
+
+        # Subparser for filtering 
+        parser_filter = subparsers.add_parser('f', help="Point Cloud Statistical outlier removal")
+        parser_filter.add_argument('filter_input_file', help="Path to input file")
+        parser_filter.add_argument('filter_output_file', help="Path to output file")
+        parser_filter.add_argument('--neighbors', '-n', type=int, help="Number of neighbors, default value: 20")
+        parser_filter.add_argument('--ratio', '-r', type=float, help="filtering ratio, default value: 2.0")
         
+        # Subparser for segmentation
+        parser_segment = subparsers.add_parser('s', help="Point Cloud Plane Segmentation")
+        parser_segment.add_argument('segment_input_file', help="Path to input file")
+        parser_segment.add_argument('segment_output_file', help="Path to output file")
+        parser_segment.add_argument('--distance', '-dt', type=float, help="Distnace Threshold Between Points")
+
+        # Subparser for clustering
+        parser_cluster = subparsers.add_parser('c', help="Point Cloud Clustering")
+        parser_cluster.add_argument('cluster_input_file', help="Path to input file")
+        parser_cluster.add_argument('cluster_output_file', help="Path to output file")
+        parser_cluster.add_argument('--epsilon', '-e', type=float, help="Epsilon")
+        parser_cluster.add_argument('--minimum', '-m', type=float, help="Minimum Points to create a Cluster")
+
         return parser
 
 
@@ -90,6 +110,66 @@ class PointCloudTool():
                 visualize.visualize(latest_path['output'])
             elif latest_path.get('input') and os.path.exists(latest_path['input']):
                 visualize.visualize(latest_path['input'])
+
+    def filtering(self, args):
+        if args.neighbors is None:
+            n=20
+        else:
+            n=args.neighbors
+        
+        if args.ratio is None:
+            r=2.0
+        else:
+            r=args.ratio
+        
+        filtered = filter.filtering(args.filter_input_file, n, r)
+        self.save_point_cloud(filtered, args.filter_output_file)
+
+        self.paths.append({
+            'input':args.filter_input_file,
+            'output':args.filter_output_file,
+        })
+
+        self.save_paths()
+
+    def segmenting(self, args):
+        if args.distance is None:
+            dt = 0.25
+        else:
+            dt = args.distance
+
+        inlier, outlier = segment.segment(args.segment_input_file, dt)
+
+        finalCloud = inlier + outlier
+
+        self.save_point_cloud(finalCloud, args.segment_output_file)
+
+        self.paths.append({
+            'input':args.segment_input_file,
+            'output':args.segment_output_file,
+        })
+        self.save_paths()
+
+    def clustering(self,args):
+        if args.epsilon is None:
+            eps = 1
+        else:
+            eps=args.epsilon
+
+        if args.minimum is None:
+            minimum = 10
+        else:
+            minimum = args.minimum
+
+        clustered = segment.cluster(args.cluster_input_file,eps,minimum)
+
+        self.save_point_cloud(clustered, args.cluster_output_file)
+        self.paths.append({
+            'input':args.cluster_input_file,
+            'output':args.cluster_output_file,
+        })
+        self.save_paths()
+
 
     def run(self):
         args = self.parser.parse_args()
